@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardline Kids — Masuk</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg: #0E1226;
+  --surface: #171C3D;
+  --surface-2: #1F2650;
+  --line: #2B3266;
+  --text: #EDEFF8;
+  --text-dim: #8C93BE;
+  --accent: #3FCBB9;
+  --accent-dim: #2B8F82;
+  --coral: #EF6E86;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background: radial-gradient(circle at 15% 0%, #171d45 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding: 24px;
+}
+.card{
+  width:100%; max-width: 380px;
+  background: var(--surface); border:1px solid var(--line);
+  border-radius: 22px; padding: 30px 26px;
+}
+.mark{
+  width:52px; height:52px; margin: 0 auto 18px;
+  border-radius:14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:800; color:#06231f; font-size:20px;
+  box-shadow: 0 14px 30px -10px rgba(63,203,185,.5);
+}
+h1{ font-family:var(--font-display); font-size:19px; text-align:center; margin:0 0 8px; }
+p.sub{ text-align:center; color:var(--text-dim); font-size:13px; margin:0 0 22px; line-height:1.6; }
+
+.steps{
+  background: var(--surface-2); border:1px solid var(--line); border-radius:14px;
+  padding:14px 16px; font-size:12.5px; color:var(--text-dim); line-height:1.7; margin-bottom:20px;
+}
+.steps b{ color:var(--text); }
+
+label{ font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px; }
+input{
+  width:100%; background: var(--surface-2); border:1px solid var(--line);
+  color: var(--text); border-radius:10px; padding:13px 14px;
+  font-size:20px; letter-spacing:6px; text-align:center; font-family:var(--font-display);
+  margin-bottom:14px;
+}
+input:focus{ outline:none; border-color: var(--accent); }
+
+.btn{
+  width:100%; border:none; border-radius:10px; padding:13px;
+  font-size:14px; font-weight:700; cursor:pointer; font-family: var(--font-body);
+  background: var(--accent); color:#062521;
+}
+.btn:disabled{ opacity:.55; cursor:default; }
+
+.msg{ text-align:center; font-size:12.5px; margin-top:12px; min-height:16px; }
+.msg.error{ color: var(--coral); }
+.msg.ok{ color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="mark">G</div>
+  <h1>Masuk ke Panel Orang Tua</h1>
+  <p class="sub">Login pakai kode dari bot Telegram Guardline Kids, bukan pakai password.</p>
+
+  <div class="steps">
+    1. Buka Telegram, chat bot <b>@Bitbugtzybot</b><br>
+    2. Kirim perintah <b>/login</b><br>
+    3. Bot balas kode 6 digit, berlaku 5 menit<br>
+    4. Masukkan kode itu di bawah ini
+  </div>
+
+  <label for="codeInput">Kode dari bot</label>
+  <input id="codeInput" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+
+  <button class="btn" id="btnLogin">Masuk</button>
+  <div class="msg" id="loginMsg"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDZnvN51G4ESG-oaZ3QC9tWQ1sRaNDRSUo",
+  authDomain: "control-f7681.firebaseapp.com",
+  databaseURL: "https://control-f7681-default-rtdb.firebaseio.com",
+  projectId: "control-f7681",
+  storageBucket: "control-f7681.firebasestorage.app",
+  messagingSenderId: "177850124560",
+  appId: "1:177850124560:web:4c520c730ca7419b063d95"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const AUTH_KEY = 'guardlineAuth';
+const MAIN_PAGE = 'index.html';
+
+if (localStorage.getItem(AUTH_KEY) === '1') {
+  window.location.replace(MAIN_PAGE);
+}
+
+const input = document.getElementById('codeInput');
+const btn = document.getElementById('btnLogin');
+const msg = document.getElementById('loginMsg');
+
+input.addEventListener('input', () => {
+  input.value = input.value.replace(/\D/g, '').slice(0, 6);
+});
+
+btn.addEventListener('click', async () => {
+  const code = input.value.trim();
+  msg.className = 'msg';
+  msg.textContent = '';
+
+  if (code.length !== 6) {
+    msg.className = 'msg error';
+    msg.textContent = 'Kode harus 6 digit.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Memeriksa...';
+
+  try {
+    const snap = await db.ref('login_codes/' + code).once('value');
+    const entry = snap.val();
+
+    if (!entry) {
+      msg.className = 'msg error';
+      msg.textContent = 'Kode salah atau sudah dipakai.';
+      btn.disabled = false;
+      btn.textContent = 'Masuk';
+      return;
+    }
+
+    if (Date.now() > entry.expiresAt) {
+      msg.className = 'msg error';
+      msg.textContent = 'Kode sudah kedaluwarsa. Minta kode baru di bot.';
+      db.ref('login_codes/' + code).remove().catch(() => {});
+      btn.disabled = false;
+      btn.textContent = 'Masuk';
+      return;
+    }
+
+    await db.ref('login_codes/' + code).remove();
+    localStorage.setItem(AUTH_KEY, '1');
+    localStorage.setItem('guardlineChatId', String(entry.chatId || ''));
+
+    msg.className = 'msg ok';
+    msg.textContent = 'Berhasil masuk, mengalihkan...';
+    setTimeout(() => { window.location.href = MAIN_PAGE; }, 500);
+
+  } catch (e) {
+    msg.className = 'msg error';
+    msg.textContent = 'Gagal menghubungi server. Coba lagi.';
+    btn.disabled = false;
+    btn.textContent = 'Masuk';
+  }
+});
+</script>
+</body>
+  </html>
