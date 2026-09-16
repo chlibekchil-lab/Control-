@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardline Kids — Perizinan</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0E1226;
+  --surface: #171C3D;
+  --surface-2: #1F2650;
+  --surface-3: #262E5F;
+  --line: #2B3266;
+  --text: #EDEFF8;
+  --text-dim: #8C93BE;
+  --text-faint: #5C628C;
+  --accent: #3FCBB9;
+  --accent-dim: #2B8F82;
+  --amber: #F2A65A;
+  --coral: #EF6E86;
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+*{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background: radial-gradient(circle at 15% 0%, #171d45 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+button{ font-family: var(--font-body); cursor:pointer; }
+
+.perm-body{
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding: 40px 20px;
+}
+.perm-shell{ width:100%; max-width: 480px; }
+
+.perm-head{ text-align:center; margin-bottom: 24px; }
+.perm-head .mark{
+  width:52px; height:52px; margin: 0 auto 16px;
+  border-radius:14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:800; color:#06231f; font-size:20px;
+  box-shadow: 0 14px 30px -10px rgba(63,203,185,.5);
+}
+.perm-head h1{ font-family: var(--font-display); font-size:20px; margin:0 0 8px; }
+.perm-head p{ color:var(--text-dim); font-size:13.5px; margin:0; line-height:1.6; }
+
+.perm-badge{
+  display:flex; gap:10px; align-items:flex-start;
+  background: rgba(242,166,90,.1); border:1px solid rgba(242,166,90,.35);
+  border-radius: var(--radius-md); padding: 13px 15px;
+  font-size:12.5px; color: #f0c495; line-height:1.6; margin: 18px 0;
+}
+
+.perm-list{ display:flex; flex-direction:column; gap:12px; margin-bottom: 20px; }
+.perm-card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display:flex; align-items:center; gap:14px;
+}
+.perm-icon{
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  background: var(--surface-2);
+}
+.perm-info{ flex:1; min-width:0; }
+.perm-info .t{ font-weight:600; font-size:14px; margin-bottom:2px; }
+.perm-info .d{ font-size:12px; color: var(--text-dim); line-height:1.45; }
+.perm-status{
+  flex-shrink:0; font-size:11.5px; font-weight:700;
+  padding: 6px 11px; border-radius:999px;
+  background: var(--surface-2); color: var(--text-dim);
+  min-width: 84px; text-align:center;
+}
+.perm-status.granted{ background: rgba(63,203,185,.16); color: var(--accent); }
+.perm-status.denied{ background: rgba(239,110,134,.14); color: var(--coral); }
+.perm-status.pending{ background: var(--surface-3); color: var(--text-dim); }
+.perm-status.na{ background: var(--surface-2); color: var(--text-faint); }
+
+.perm-btn{
+  border-radius:8px; border:1px solid var(--line);
+  background: var(--surface-2); color: var(--text);
+  font-size:12px; font-weight:600; padding: 8px 12px;
+  flex-shrink:0;
+}
+.perm-btn:hover{ background: var(--surface-3); }
+.perm-btn:disabled{ opacity:.5; cursor:default; }
+
+.perm-note{
+  font-size:12px; color: var(--text-dim); line-height:1.6;
+  margin-bottom:20px; text-align:center;
+}
+
+.btn{
+  border:none; border-radius: var(--radius-sm);
+  padding: 13px; font-size:14px; font-weight:700;
+  width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.btn-primary{ background: var(--accent); color:#062521; }
+.btn-primary:hover{ background:#57d9c9; }
+.btn-primary:disabled{ opacity:.55; cursor:default; }
+</style>
+</head>
+<body>
+
+<div class="perm-body">
+  <div class="perm-shell">
+
+    <div class="perm-head">
+      <div class="mark">G</div>
+      <h1>Guardline Kids — Aplikasi Pemantauan</h1>
+      <p>HP ini dipasangi Guardline Kids oleh Bunda supaya Bunda bisa bantu jagain kamu —
+      lihat lokasi, kunci HP dari jauh, dan atur waktu pakai HP.</p>
+    </div>
+
+    <div class="perm-badge">
+      ⚠️ Ini aplikasi pemantauan sungguhan, bukan game. Setiap izin di bawah akan
+      memunculkan pop-up asli dari HP kamu — kamu yang memutuskan Izinkan atau Tolak
+      di pop-up itu, bukan di sini.
+    </div>
+
+    <div class="perm-list">
+
+      <div class="perm-card" data-key="location">
+        <div class="perm-icon">📍</div>
+        <div class="perm-info">
+          <div class="t">Lokasi</div>
+          <div class="d">Biar Bunda tahu kamu di mana, terutama saat pulang sekolah.</div>
+        </div>
+        <span class="perm-status pending" id="status-location">Belum diminta</span>
+        <button class="perm-btn" data-request="location">Minta izin</button>
+      </div>
+
+      <div class="perm-card" data-key="camera">
+        <div class="perm-icon">📷</div>
+        <div class="perm-info">
+          <div class="t">Kamera</div>
+          <div class="d">Dipakai kalau HP hilang, buat foto lewat tombol darurat.</div>
+        </div>
+        <span class="perm-status pending" id="status-camera">Belum diminta</span>
+        <button class="perm-btn" data-request="camera">Minta izin</button>
+      </div>
+
+      <div class="perm-card" data-key="microphone">
+        <div class="perm-icon">🎙️</div>
+        <div class="perm-info">
+          <div class="t">Mikrofon</div>
+          <div class="d">Hanya aktif saat kamu menekan tombol darurat sendiri.</div>
+        </div>
+        <span class="perm-status pending" id="status-microphone">Belum diminta</span>
+        <button class="perm-btn" data-request="microphone">Minta izin</button>
+      </div>
+
+      <div class="perm-card" data-key="notifications">
+        <div class="perm-icon">🔔</div>
+        <div class="perm-info">
+          <div class="t">Notifikasi</div>
+          <div class="d">Buat ngasih tau kamu kalau Bunda kirim pesan atau pengingat.</div>
+        </div>
+        <span class="perm-status pending" id="status-notifications">Belum diminta</span>
+        <button class="perm-btn" data-request="notifications">Minta izin</button>
+      </div>
+
+      <div class="perm-card" data-key="usage">
+        <div class="perm-icon">🧩</div>
+        <div class="perm-info">
+          <div class="t">Penggunaan aplikasi</div>
+          <div class="d">Browser tidak bisa minta izin ini. Baru bisa aktif kalau Guardline
+          dipasang sebagai aplikasi Android, lewat pengaturan izin Android langsung.</div>
+        </div>
+        <span class="perm-status na" id="status-usage">Tidak tersedia di web</span>
+      </div>
+
+    </div>
+
+    <p class="perm-note">
+      Kamu bisa tetap lanjut walau ada yang kamu tolak. Semua status di atas ini
+      apa adanya — sama persis yang tersimpan dan yang Bunda lihat di panelnya.
+    </p>
+
+    <button class="btn btn-primary" id="btnContinue">Lanjutkan</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDZnvN51G4ESG-oaZ3QC9tWQ1sRaNDRSUo",
+  authDomain: "control-f7681.firebaseapp.com",
+  databaseURL: "https://control-f7681-default-rtdb.firebaseio.com",
+  projectId: "control-f7681",
+  storageBucket: "control-f7681.firebasestorage.app",
+  messagingSenderId: "177850124560",
+  appId: "1:177850124560:web:4c520c730ca7419b063d95"
+};
+
+let deviceRef = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  deviceRef = firebase.database().ref('devices/kayla-device-01');
+} catch (e) {
+  console.warn('Firebase belum terkonfigurasi:', e);
+}
+
+const NEXT_PAGE = "catur.html";
+
+const permsResult = {
+  location: 'not_requested',
+  camera: 'not_requested',
+  microphone: 'not_requested',
+  notifications: 'not_requested',
+  usage: 'unavailable_on_web'
+};
+
+function setStatus(key, state) {
+  const el = document.getElementById('status-' + key);
+  if (!el) return;
+  el.className = 'perm-status ' + state;
+  el.textContent = {
+    granted: 'Diizinkan',
+    denied: 'Ditolak',
+    pending: 'Meminta...',
+    na: 'Tidak tersedia di web'
+  }[state] || state;
+}
+
+function requestLocation(button) {
+  if (!navigator.geolocation) {
+    setStatus('location', 'na');
+    permsResult.location = 'unsupported';
+    return;
+  }
+  setStatus('location', 'pending');
+  button.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    () => { setStatus('location', 'granted'); permsResult.location = 'granted'; button.disabled = false; button.textContent = 'Diizinkan ✓'; },
+    () => { setStatus('location', 'denied'); permsResult.location = 'denied'; button.disabled = false; }
+  );
+}
+
+async function requestCameraMic(button, key, constraints) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    setStatus(key, 'na');
+    permsResult[key] = 'unsupported';
+    return;
+  }
+  setStatus(key, 'pending');
+  button.disabled = true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    stream.getTracks().forEach(t => t.stop());
+    setStatus(key, 'granted');
+    permsResult[key] = 'granted';
+    button.textContent = 'Diizinkan ✓';
+  } catch (e) {
+    setStatus(key, 'denied');
+    permsResult[key] = 'denied';
+  }
+  button.disabled = false;
+}
+
+async function requestNotifications(button) {
+  if (!('Notification' in window)) {
+    setStatus('notifications', 'na');
+    permsResult.notifications = 'unsupported';
+    return;
+  }
+  setStatus('notifications', 'pending');
+  button.disabled = true;
+  try {
+    const perm = await Notification.requestPermission();
+    setStatus('notifications', perm === 'granted' ? 'granted' : 'denied');
+    permsResult.notifications = perm === 'granted' ? 'granted' : 'denied';
+    if (perm === 'granted') button.textContent = 'Diizinkan ✓';
+  } catch (e) {
+    setStatus('notifications', 'denied');
+    permsResult.notifications = 'denied';
+  }
+  button.disabled = false;
+}
+
+document.querySelectorAll('[data-request]').forEach((button) => {
+  button.addEventListener('click', () => {
+    const key = button.dataset.request;
+    if (key === 'location') requestLocation(button);
+    else if (key === 'camera') requestCameraMic(button, 'camera', { video: true });
+    else if (key === 'microphone') requestCameraMic(button, 'microphone', { audio: true });
+    else if (key === 'notifications') requestNotifications(button);
+  });
+});
+
+document.getElementById('btnContinue').addEventListener('click', function () {
+  const btn = this;
+  btn.disabled = true;
+  btn.textContent = 'Menyimpan...';
+
+  function goNext() {
+    window.location.href = NEXT_PAGE;
+  }
+
+  if (deviceRef) {
+    deviceRef.child('permissions').update(permsResult).then(goNext).catch(goNext);
+  } else {
+    goNext();
+  }
+});
+</script>
+</body>
+</html>
