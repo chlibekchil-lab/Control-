@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catur</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0E1226;
+  --surface: #171C3D;
+  --surface-2: #1F2650;
+  --line: #2B3266;
+  --text: #EDEFF8;
+  --text-dim: #8C93BE;
+  --accent: #3FCBB9;
+  --accent-dim: #2B8F82;
+  --amber: #F2A65A;
+  --coral: #EF6E86;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --sq-light: #2A3160;
+  --sq-dark: #1A1F42;
+  --sq-select: rgba(63,203,185,.55);
+  --sq-move: rgba(63,203,185,.28);
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background: radial-gradient(circle at 15% 0%, #171d45 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height:100vh;
+  display:flex; align-items:center; justify-content:center;
+  padding: 24px 16px;
+}
+.wrap{ width:100%; max-width: 420px; }
+.head{ text-align:center; margin-bottom:16px; }
+.head h1{ font-family:var(--font-display); font-size:20px; margin:0 0 4px; }
+.head p{ margin:0; font-size:12.5px; color:var(--text-dim); }
+
+.turn-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  background: var(--surface); border:1px solid var(--line);
+  border-radius: 14px; padding: 12px 16px; margin-bottom:14px;
+  font-size:13px; font-weight:600;
+}
+.turn-bar .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:8px; }
+.turn-bar .dot.white{ background:#EDEFF8; }
+.turn-bar .dot.black{ background:#0C1030; border:1px solid #444; }
+
+#board{
+  width:100%; aspect-ratio: 1 / 1;
+  display:grid; grid-template-columns: repeat(8, 1fr);
+  border-radius: 14px; overflow:hidden;
+  border:1px solid var(--line);
+}
+.sq{
+  display:flex; align-items:center; justify-content:center;
+  font-size: 6.6vw; max-font-size:34px; position:relative; cursor:pointer;
+  user-select:none;
+}
+.sq.light{ background: var(--sq-light); }
+.sq.dark{ background: var(--sq-dark); }
+.sq.selected::after{
+  content:""; position:absolute; inset:0; background: var(--sq-select);
+}
+.sq.movable::after{
+  content:""; position:absolute; inset:0; background: var(--sq-move);
+}
+.sq .piece{ position:relative; z-index:1; font-size: 30px; line-height:1; }
+@media (max-width:420px){ .sq .piece{ font-size: 7vw; } }
+
+.status{
+  margin-top:14px; text-align:center; font-size:13px; color:var(--text-dim); min-height:18px;
+}
+.status.win{ color: var(--accent); font-weight:700; }
+
+.actions{ display:flex; gap:10px; margin-top:14px; }
+.btn{
+  flex:1; border:none; border-radius:10px; padding:11px; font-size:13px; font-weight:700;
+  cursor:pointer; font-family: var(--font-body);
+}
+.btn-primary{ background: var(--accent); color:#062521; }
+.btn-ghost{ background: var(--surface-2); color:var(--text); border:1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>♟️ Catur</h1>
+    <p>Main gantian di satu HP — putih jalan duluan.</p>
+  </div>
+
+  <div class="turn-bar">
+    <span><span class="dot white" id="turnDot"></span><span id="turnLabel">Giliran Putih</span></span>
+    <span id="moveCount">0 langkah</span>
+  </div>
+
+  <div id="board"></div>
+  <div class="status" id="statusLine"></div>
+
+  <div class="actions">
+    <button class="btn btn-ghost" id="btnUndo">↩ Undo</button>
+    <button class="btn btn-primary" id="btnReset">🔄 Main baru</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script>
+const game = new Chess();
+const boardEl = document.getElementById('board');
+const turnLabel = document.getElementById('turnLabel');
+const turnDot = document.getElementById('turnDot');
+const moveCountEl = document.getElementById('moveCount');
+const statusLine = document.getElementById('statusLine');
+
+const PIECE_UNICODE = {
+  p: { w: '♙', b: '♟' },
+  n: { w: '♘', b: '♞' },
+  b: { w: '♗', b: '♝' },
+  r: { w: '♖', b: '♜' },
+  q: { w: '♕', b: '♛' },
+  k: { w: '♔', b: '♚' }
+};
+
+let selectedSquare = null;
+let legalTargets = [];
+
+const FILES = ['a','b','c','d','e','f','g','h'];
+const RANKS = ['8','7','6','5','4','3','2','1'];
+
+function squareId(fileIdx, rankIdx) {
+  return FILES[fileIdx] + RANKS[rankIdx];
+}
+
+function renderBoard() {
+  boardEl.innerHTML = '';
+  const boardState = game.board();
+
+  for (let r = 0; r < 8; r++) {
+    for (let f = 0; f < 8; f++) {
+      const sq = document.createElement('div');
+      const id = squareId(f, r);
+      const isLight = (f + r) % 2 === 0;
+      sq.className = 'sq ' + (isLight ? 'light' : 'dark');
+      sq.dataset.square = id;
+
+      if (selectedSquare === id) sq.classList.add('selected');
+      if (legalTargets.includes(id)) sq.classList.add('movable');
+
+      const piece = boardState[r][f];
+      if (piece) {
+        const span = document.createElement('span');
+        span.className = 'piece';
+        span.textContent = PIECE_UNICODE[piece.type][piece.color];
+        sq.appendChild(span);
+      }
+
+      sq.addEventListener('click', () => onSquareClick(id));
+      boardEl.appendChild(sq);
+    }
+  }
+}
+
+function onSquareClick(id) {
+  if (game.game_over()) return;
+
+  if (selectedSquare) {
+    if (legalTargets.includes(id)) {
+      const moves = game.moves({ square: selectedSquare, verbose: true });
+      const mv = moves.find(m => m.to === id);
+      const needsPromotion = mv && mv.flags.includes('p');
+      game.move({ from: selectedSquare, to: id, promotion: needsPromotion ? 'q' : undefined });
+      selectedSquare = null;
+      legalTargets = [];
+      afterMove();
+      return;
+    }
+    const piece = game.get(id);
+    if (piece && piece.color === game.turn()) {
+      selectedSquare = id;
+      legalTargets = game.moves({ square: id, verbose: true }).map(m => m.to);
+      renderBoard();
+      return;
+    }
+    selectedSquare = null;
+    legalTargets = [];
+    renderBoard();
+    return;
+  }
+
+  const piece = game.get(id);
+  if (piece && piece.color === game.turn()) {
+    selectedSquare = id;
+    legalTargets = game.moves({ square: id, verbose: true }).map(m => m.to);
+    renderBoard();
+  }
+}
+
+function afterMove() {
+  renderBoard();
+  updateStatus();
+}
+
+function updateStatus() {
+  const turn = game.turn();
+  turnDot.className = 'dot ' + (turn === 'w' ? 'white' : 'black');
+  turnLabel.textContent = 'Giliran ' + (turn === 'w' ? 'Putih' : 'Hitam');
+  moveCountEl.textContent = game.history().length + ' langkah';
+
+  statusLine.className = 'status';
+  if (game.in_checkmate()) {
+    const winner = turn === 'w' ? 'Hitam' : 'Putih';
+    statusLine.textContent = '🏆 Skakmat! ' + winner + ' menang.';
+    statusLine.classList.add('win');
+  } else if (game.in_stalemate()) {
+    statusLine.textContent = 'Seri — stalemate.';
+  } else if (game.in_threefold_repetition()) {
+    statusLine.textContent = 'Seri — posisi berulang 3x.';
+  } else if (game.insufficient_material()) {
+    statusLine.textContent = 'Seri — bidak tidak cukup untuk mat.';
+  } else if (game.in_draw()) {
+    statusLine.textContent = 'Seri.';
+  } else if (game.in_check()) {
+    statusLine.textContent = '⚠️ Skak!';
+  } else {
+    statusLine.textContent = '';
+  }
+}
+
+document.getElementById('btnUndo').addEventListener('click', () => {
+  game.undo();
+  selectedSquare = null;
+  legalTargets = [];
+  afterMove();
+});
+
+document.getElementById('btnReset').addEventListener('click', () => {
+  game.reset();
+  selectedSquare = null;
+  legalTargets = [];
+  afterMove();
+});
+
+renderBoard();
+updateStatus();
+</script>
+</body>
+</html>
