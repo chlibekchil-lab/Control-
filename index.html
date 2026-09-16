@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardline Kids — Pengontrol</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg: #0E1226;
+  --bg-grid: #10173a;
+  --surface: #171C3D;
+  --surface-2: #1F2650;
+  --surface-3: #262E5F;
+  --line: #2B3266;
+  --text: #EDEFF8;
+  --text-dim: #8C93BE;
+  --text-faint: #5C628C;
+  --accent: #3FCBB9;
+  --accent-dim: #2B8F82;
+  --amber: #F2A65A;
+  --coral: #EF6E86;
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+*{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+
+body{
+  background: radial-gradient(circle at 15% 0%, #171d45 0%, var(--bg) 55%);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+a{ color: inherit; text-decoration:none; }
+button{ font-family: var(--font-body); cursor:pointer; }
+
+.app{
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar{
+  background: linear-gradient(180deg, var(--surface) 0%, #141935 100%);
+  border-right: 1px solid var(--line);
+  padding: 28px 18px;
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom: 34px;
+  padding: 0 8px;
+}
+.brand-mark{
+  width:34px; height:34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:flex; align-items:center; justify-content:center;
+  font-family: var(--font-display);
+  font-weight:800;
+  color: #06231f;
+  transform: perspective(200px) rotateX(8deg);
+  box-shadow: 0 8px 20px -6px rgba(63,203,185,.55);
+}
+.brand-name{
+  font-family: var(--font-display);
+  font-weight:700;
+  font-size: 15px;
+  letter-spacing: .2px;
+}
+.brand-name span{ color: var(--text-dim); font-weight:500; display:block; font-size:11px; }
+
+.nav-item{
+  display:flex; align-items:center; gap:12px;
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 14px;
+  font-weight:500;
+  transition: background .15s ease, color .15s ease;
+}
+.nav-item svg{ width:18px; height:18px; flex-shrink:0; }
+.nav-item:hover{ background: var(--surface-2); color: var(--text); }
+.nav-item.active{ background: var(--surface-2); color: var(--accent); }
+
+.sidebar-foot{
+  margin-top:auto;
+  padding: 14px 12px;
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--text-faint);
+  line-height:1.5;
+}
+
+.main{
+  padding: 34px 42px 60px;
+  max-width: 1180px;
+}
+
+.topline{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  margin-bottom: 30px;
+  gap: 20px;
+}
+.topline h1{
+  font-family: var(--font-display);
+  font-size: 26px;
+  margin: 0 0 6px;
+  font-weight:700;
+}
+.topline p{
+  margin:0;
+  color: var(--text-dim);
+  font-size: 14px;
+  max-width: 480px;
+}
+
+.child-pill{
+  display:flex; align-items:center; gap:10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 16px 7px 7px;
+}
+.child-pill img, .child-pill .avatar{
+  width:30px; height:30px; border-radius:50%;
+  background: linear-gradient(135deg,var(--amber),#c97b2c);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:13px; font-family:var(--font-display); color:#241202;
+}
+.child-pill .who{ font-size:13px; font-weight:600; }
+.child-pill .stat{ font-size:11px; color: var(--text-dim); }
+.dot-live{ width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 3px rgba(63,203,185,.2); }
+
+.hero{
+  display:grid;
+  grid-template-columns: 300px 1fr;
+  gap: 34px;
+  background: linear-gradient(160deg, var(--surface) 0%, #161a3a 100%);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  margin-bottom: 30px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(circle at 85% 20%, rgba(63,203,185,.14), transparent 55%);
+  pointer-events:none;
+}
+
+.phone-stage{
+  perspective: 900px;
+  display:flex; align-items:center; justify-content:center;
+}
+.phone{
+  width: 190px;
+  height: 390px;
+  background: linear-gradient(160deg, #232a54, #12162e);
+  border-radius: 34px;
+  border: 1px solid #384086;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.03);
+  transform: rotateY(-18deg) rotateX(6deg);
+  transition: transform .25s ease;
+  padding: 14px;
+  position:relative;
+}
+.phone-stage:hover .phone{ transform: rotateY(-8deg) rotateX(3deg); }
+.phone-notch{
+  width: 50px; height:6px; background:#0b0e22; border-radius:6px;
+  margin: 0 auto 12px;
+}
+.phone-screen{
+  background: #0C1030;
+  border-radius: 22px;
+  height: calc(100% - 26px);
+  padding: 16px 14px;
+  display:flex; flex-direction:column; gap:14px;
+}
+.phone-lockstate{
+  text-align:center; margin-top: 30px;
+}
+.phone-lockstate .icon{ font-size: 30px; margin-bottom:10px; }
+.phone-lockstate .label{ font-family: var(--font-display); font-weight:700; font-size:15px; }
+.phone-lockstate .sub{ font-size:11px; color: var(--text-dim); margin-top:3px; }
+
+.phone-mini-stats{
+  margin-top:auto;
+  display:flex; justify-content:space-between;
+  font-size:10px; color: var(--text-dim);
+  border-top:1px solid #232a54; padding-top:10px;
+}
+
+.hero-info{
+  display:flex; flex-direction:column; justify-content:center;
+  gap: 18px;
+  z-index:1;
+}
+.hero-info h2{
+  font-family: var(--font-display);
+  font-size: 21px; margin:0; font-weight:700;
+}
+.hero-info p{ margin:0; color: var(--text-dim); font-size:14px; max-width:420px; }
+
+.hero-actions{ display:flex; gap:12px; flex-wrap:wrap; }
+.btn{
+  border:none; border-radius: var(--radius-sm);
+  padding: 11px 18px;
+  font-size: 13px; font-weight:600;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.btn-primary{ background: var(--accent); color:#062521; }
+.btn-primary:hover{ background:#57d9c9; }
+.btn-ghost{ background: var(--surface-2); color:var(--text); border:1px solid var(--line); }
+.btn-ghost:hover{ background: var(--surface-3); }
+.btn-danger{ background: rgba(239,110,134,.14); color: var(--coral); border:1px solid rgba(239,110,134,.3); }
+
+.section-label{
+  font-family: var(--font-display);
+  font-size: 13px; text-transform:none;
+  color: var(--text-dim);
+  margin: 0 0 14px;
+  font-weight:600;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  will-change: transform;
+}
+.card:hover{ border-color: #3A4380; box-shadow: 0 18px 34px -18px rgba(0,0,0,.55); }
+
+.card-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; }
+.card-icon{
+  width:38px; height:38px; border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  background: var(--surface-2);
+}
+.card-title{ font-weight:600; font-size:14.5px; margin: 2px 0 4px; }
+.card-desc{ font-size:12.5px; color: var(--text-dim); line-height:1.5; margin:0 0 16px; }
+
+.status-tag{
+  font-size: 11px; font-weight:600;
+  padding: 4px 9px; border-radius: 999px;
+}
+.status-on{ background: rgba(63,203,185,.14); color: var(--accent); }
+.status-off{ background: rgba(140,147,190,.14); color: var(--text-dim); }
+.status-warn{ background: rgba(242,166,90,.14); color: var(--amber); }
+
+.card-foot{ display:flex; justify-content:space-between; align-items:center; margin-top: 6px; }
+
+.switch{ position:relative; width:42px; height:24px; }
+.switch input{ opacity:0; width:0; height:0; }
+.switch .track{
+  position:absolute; inset:0; background: var(--surface-3);
+  border-radius: 999px; transition: background .15s;
+}
+.switch .thumb{
+  position:absolute; top:3px; left:3px; width:18px; height:18px;
+  background: var(--text-dim); border-radius:50%; transition: transform .15s, background .15s;
+}
+.switch input:checked + .track{ background: var(--accent-dim); }
+.switch input:checked + .track + .thumb{ transform: translateX(18px); background: var(--accent); }
+
+.progress{
+  height:6px; border-radius:999px; background: var(--surface-3); overflow:hidden; margin-top:2px;
+}
+.progress > i{ display:block; height:100%; background: var(--amber); border-radius:999px; }
+
+.app-list{ display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+.app-chip{
+  font-size:11px; padding: 5px 9px; border-radius:8px;
+  background: var(--surface-2); color: var(--text-dim);
+  border:1px solid var(--line);
+}
+.app-chip.blocked{ color: var(--coral); border-color: rgba(239,110,134,.3); background: rgba(239,110,134,.08); }
+
+.map-preview{
+  height: 84px; border-radius: var(--radius-sm);
+  background:
+    radial-gradient(circle at 30% 40%, rgba(63,203,185,.25), transparent 55%),
+    repeating-linear-gradient(0deg, #202759 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(90deg, #202759 0 1px, transparent 1px 22px),
+    #171C3D;
+  position:relative; margin-bottom:14px;
+}
+.map-pin{
+  position:absolute; top:38%; left:45%;
+  width:12px; height:12px; border-radius:50%;
+  background: var(--accent); box-shadow: 0 0 0 5px rgba(63,203,185,.2);
+}
+
+.perm-body{
+  display:flex; align-items:center; justify-content:center;
+  min-height:100vh; padding: 40px 20px;
+}
+.perm-shell{
+  width:100%; max-width: 460px;
+}
+.perm-head{ text-align:center; margin-bottom: 26px; }
+.perm-head .mark{
+  width:52px; height:52px; margin: 0 auto 16px;
+  border-radius:14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+  display:flex; align-items:center; justify-content:center;
+  transform: perspective(300px) rotateX(10deg);
+  box-shadow: 0 14px 30px -10px rgba(63,203,185,.5);
+  font-family:var(--font-display); font-weight:800; color:#06231f; font-size:20px;
+}
+.perm-head h1{ font-family: var(--font-display); font-size:21px; margin:0 0 8px; }
+.perm-head p{ color:var(--text-dim); font-size:13.5px; margin:0; line-height:1.6; }
+
+.perm-list{ display:flex; flex-direction:column; gap:12px; margin-bottom: 22px; }
+
+.perm-card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display:flex; align-items:center; gap:14px;
+  transform-style: preserve-3d;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.perm-card:hover{ border-color:#3A4380; }
+.perm-icon{
+  width:40px; height:40px; border-radius:10px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:18px;
+  background: var(--surface-2);
+}
+.perm-info{ flex:1; min-width:0; }
+.perm-info .t{ font-weight:600; font-size:14px; margin-bottom:2px; }
+.perm-info .d{ font-size:12px; color: var(--text-dim); }
+
+.perm-actions{ display:flex; gap:8px; flex-shrink:0; }
+.perm-btn{
+  border-radius:8px; border:1px solid var(--line);
+  background: var(--surface-2); color: var(--text-dim);
+  font-size:12px; font-weight:600; padding: 8px 12px;
+}
+.perm-btn.allow.active{ background: rgba(63,203,185,.16); border-color: var(--accent); color: var(--accent); }
+.perm-btn.deny.active{ background: rgba(239,110,134,.14); border-color: var(--coral); color: var(--coral); }
+
+.perm-note{
+  display:flex; gap:10px; align-items:flex-start;
+  background: var(--surface); border:1px solid var(--line);
+  border-radius: var(--radius-md); padding: 14px 16px;
+  font-size:12px; color: var(--text-dim); line-height:1.6; margin-bottom:20px;
+}
+
+.perm-submit{ width:100%; justify-content:center; padding: 13px; font-size:14px; }
+
+@media (max-width: 880px){
+  .app{ grid-template-columns: 1fr; }
+  .sidebar{ display:none; }
+  .hero{ grid-template-columns: 1fr; }
+  .grid{ grid-template-columns: 1fr 1fr; }
+  .main{ padding: 24px; }
+}
+@media (max-width:560px){
+  .grid{ grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Guardline Kids<span>Panel orang tua</span></div>
+    </div>
+
+    <a class="nav-item active" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Pengontrol
+    </a>
+    <a class="nav-item" href="permissions.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z"/></svg>
+      Perizinan
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+      Riwayat aktivitas
+    </a>
+    <a class="nav-item" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h0a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v0a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.6 1z"/></svg>
+      Pengaturan
+    </a>
+
+    <div class="sidebar-foot">
+      Terhubung ke Firebase<br>
+      <span id="fbStatus">memeriksa koneksi…</span><br>
+      <a href="#" id="btnLogout" style="color:var(--coral);display:inline-block;margin-top:8px;">Keluar</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topline">
+      <div>
+        <h1>Halo, Bunda 👋</h1>
+        <p>Ini kondisi HP Kayla hari ini. Semua kontrol di sini langsung terlihat oleh Kayla juga — tidak ada yang disembunyikan.</p>
+      </div>
+      <div class="child-pill">
+        <div class="avatar">K</div>
+        <div>
+          <div class="who">Kayla</div>
+          <div class="stat"><span class="dot-live" style="display:inline-block;margin-right:5px;"></span>Online 3 menit lalu</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div class="phone-stage">
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-lockstate">
+              <div class="icon" id="phoneLockIcon">🔒</div>
+              <div class="label" id="phoneLockLabel">Terkunci</div>
+              <div class="sub" id="phoneLockSub">Dikunci manual · 08:12</div>
+            </div>
+            <div class="phone-mini-stats">
+              <span id="miniBattery">🔋 82%</span>
+              <span id="miniApps">🚫 3 app</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-info">
+        <h2>Kondisi HP Kayla sekarang</h2>
+        <p>Terakhir sinkron 12 detik lalu. Kayla ada di rumah, baterai aman, dan sesuai jadwal HP sedang boleh dipakai untuk belajar.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="btnToggleLock">🔒 Kunci sekarang</button>
+          <button class="btn btn-ghost">🔔 Kirim pengingat</button>
+          <button class="btn btn-danger">🚨 Mode darurat</button>
+        </div>
+      </div>
+    </section>
+
+    <p class="section-label">Kontrol</p>
+    <div class="grid">
+
+      <div class="card" id="cardLock">
+        <div class="card-top">
+          <div class="card-icon">🔒</div>
+          <span class="status-tag status-on" id="lockStatusTag">Terkunci</span>
+        </div>
+        <div class="card-title">Kunci HP</div>
+        <p class="card-desc">Kunci layar Kayla dari jarak jauh, kapan pun dibutuhkan.</p>
+        <div class="card-foot">
+          <span style="font-size:12px;color:var(--text-dim)">Kunci instan</span>
+          <label class="switch"><input type="checkbox" id="lockSwitch" checked><span class="track"></span><span class="thumb"></span></label>
+        </div>
+      </div>
+
+      <div class="card" id="cardSchedule">
+        <div class="card-top">
+          <div class="card-icon">⏰</div>
+          <span class="status-tag status-on">Aktif</span>
+        </div>
+        <div class="card-title">Jadwal pakai HP</div>
+        <p class="card-desc">Waktu belajar & tidur dikunci otomatis sesuai jadwal.</p>
+        <div class="card-foot" style="display:flex;flex-direction:column;gap:6px;align-items:stretch;">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim)">
+            <span>Sekolah 07:00–14:00</span><span class="status-tag status-on">Terkunci</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-dim)">
+            <span>Tidur 21:00–06:00</span><span class="status-tag status-off">Menunggu</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="cardApps">
+        <div class="card-top">
+          <div class="card-icon">🧩</div>
+          <span class="status-tag status-warn">3 diblokir</span>
+        </div>
+        <div class="card-title">Blokir aplikasi</div>
+        <p class="card-desc">Pilih aplikasi yang tidak boleh dibuka Kayla.</p>
+        <div class="app-list">
+          <span class="app-chip blocked">TikTok</span>
+          <span class="app-chip blocked">YouTube</span>
+          <span class="app-chip blocked">Game X</span>
+          <span class="app-chip">WhatsApp</span>
+          <span class="app-chip">Kelas Online</span>
+        </div>
+      </div>
+
+      <div class="card" id="cardLocation">
+        <div class="card-top">
+          <div class="card-icon">📍</div>
+          <span class="status-tag status-on">Di rumah</span>
+        </div>
+        <div class="card-title">Lokasi</div>
+        <div class="map-preview"><div class="map-pin"></div></div>
+        <p class="card-desc" style="margin-bottom:0;">Jl. Kenanga No. 12 · akurasi ±15m</p>
+      </div>
+
+      <div class="card" id="cardBattery">
+        <div class="card-top">
+          <div class="card-icon">🔋</div>
+          <span class="status-tag status-on" id="batteryTag">82%</span>
+        </div>
+        <div class="card-title">Baterai</div>
+        <p class="card-desc">Dapat notifikasi otomatis kalau baterai Kayla di bawah 20%.</p>
+        <div class="progress"><i style="width:82%"></i></div>
+      </div>
+
+      <div class="card" id="cardActivity">
+        <div class="card-top">
+          <div class="card-icon">📊</div>
+          <span class="status-tag status-off">Ringkasan</span>
+        </div>
+        <div class="card-title">Pemakaian hari ini</div>
+        <p class="card-desc">2 jam 40 menit terpakai, paling banyak di Kelas Online.</p>
+        <div class="progress"><i style="width:44%;background:var(--accent)"></i></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDZnvN51G4ESG-oaZ3QC9tWQ1sRaNDRSUo",
+  authDomain: "control-f7681.firebaseapp.com",
+  databaseURL: "https://control-f7681-default-rtdb.firebaseio.com",
+  projectId: "control-f7681",
+  storageBucket: "control-f7681.firebasestorage.app",
+  messagingSenderId: "177850124560",
+  appId: "1:177850124560:web:4c520c730ca7419b063d95"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const AUTH_KEY = 'guardlineAuth';
+if (localStorage.getItem(AUTH_KEY) !== '1') {
+  window.location.replace('login.html');
+}
+document.getElementById('btnLogout').addEvent
